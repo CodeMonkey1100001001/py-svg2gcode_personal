@@ -1,6 +1,10 @@
 # Python SVG to G-Code Converter
 A fast svg to gcode compiler forked from [vishpat/svg2gcode](https://github.com/vishpat/svg2gcode).
 
+This is CodeMonkey1100001001 fork. Note it is highly optimized for my homebrew Makelangelo polar plotter.
+
+--------------
+
 This library takes an svg file `location/my_file.svg` and outputs the gcode conversion to a folder in the same directory `location/gcode_output/my_file.gcode`.
 
 The file `config.py` contains the configurations for the conversion (printer bed size etc).
@@ -8,7 +12,7 @@ The file `config.py` contains the configurations for the conversion (printer bed
 ## Installation
 Simply clone this repo.
 ```
-git clone https://github.com/pjpscriv/py-svg2gcode.git
+git clone https://github.com/CodeMonkey1100001001/py-svg2gcode_personal.git
 ```
 
 ## Usage
@@ -23,7 +27,8 @@ import generate_gcode from py-scvg2gcode
 ```
 ### As a Python Command
 ```
-python svg2gcode.py
+python3 ./svg2gcode.py ./filename.svg
+
 ```
 
 ### With Bash Script (Recommended)

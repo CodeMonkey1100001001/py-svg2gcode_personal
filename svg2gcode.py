@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#https://github.com/pjpscriv/py-svg2gcode
+# cloned from https://github.com/pjpscriv/py-svg2gcode
 # External Imports
 import os
 import sys
