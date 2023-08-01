@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#https://github.com/pjpscriv/py-svg2gcode
 # External Imports
 import os
 import sys
@@ -60,10 +60,14 @@ def generate_gcode(filename):
     # Get the Height and Width from the parent svg tag
     width = root.get("width")
     height = root.get("height")
-    if width == None or height == None:
-        viewbox = root.get("viewBox")
-        if viewbox:
+    #if width == None or height == None:
+    viewbox = root.get("viewBox")
+    print("viewbox",viewbox)
+    
+    #make command line switch to override viewbox and width, height
+    if viewbox:
             _, _, width, height = viewbox.split()
+
 
     if width == None or height == None:
         # raise ValueError("Unable to get width or height for the svg")
@@ -84,14 +88,29 @@ def generate_gcode(filename):
     # ASSUMES: Y ASIX IS LONG AXIS
     #          X AXIS IS SHORT AXIS
     # i.e. laser cutter is in "portrait"
-    scale_x = bed_max_x / float(width)
-    scale_y = bed_max_y / float(height)
+    print("====width====",width)
+    width = width.replace("mm","")
+    height = height.replace("mm","")
+    width = width.replace("cm","")
+    height = height.replace("cm","")
+    
+    print("====width====",width)
+    print("====height====",height)
+    scale_x = (bed_max_x - bed_min_x) / float(width)
+    xoffset = (bed_max_x - bed_min_x) / 2 
+    print("xoffset",xoffset)
+    #scale_x = 1.6
+    scale_y = (bed_max_y -bed_min_y) / float(height)
+    #scale_y = 1.6
+    yoffset = (bed_max_y - bed_min_y) / 2 
+    print("yoffset",yoffset)
+    print("scale_x",scale_x,"scale_y",scale_y)
     scale = min(scale_x, scale_y)
-    if scale > 1:
-        scale = 1
+#    if scale > 1:
+#        scale = 1
 
-    log += debug_log("wdth: " + str(width))
-    log += debug_log("hght: " + str(height))
+    log += debug_log("width: " + str(width))
+    log += debug_log("height: " + str(height))
     log += debug_log("scale: " + str(scale))
     log += debug_log("x%: " + str(scale_x))
     log += debug_log("y%: " + str(scale_y))
@@ -142,26 +161,30 @@ def generate_gcode(filename):
             if d:
                 log += debug_log("\td is GOOD!")
 
-                gcode += shape_preamble + "\n"
+                #gcode += shape_preamble + "\n"
                 points = point_generator(d, m, smoothness)
 
                 log += debug_log("\tPoints: " + str(points))
 
+                firstMove = 1
+                
                 for x, y in points:
                     # log += debug_log("\t  pt: "+str((x,y)))
 
-                    x = scale * x
-                    y = bed_max_y - scale * y
+                    x = (scale * x) - xoffset
+                    #y = bed_max_y - scale * y
+                    y = (scale * y) - yoffset
 
                     log += debug_log("\t  pt: " + str((x, y)))
 
-                    if x >= 0 and x <= bed_max_x and y >= 0 and y <= bed_max_y:
+                    if x >= -200 and x <= bed_max_x and y >= -200 and y <= bed_max_y:
                         if new_shape:
-                            gcode += "G0 X%0.1f Y%0.1f\n" % (x, y)
-                            gcode += "M03\n"
+                            gcode += "G0 X%0.1f Y%0.1f F%0.1f\n" % (-x, -y, feed_rate)
+                            #gcode += "M03\n"
+                            gcode += shape_preamble + "\n"
                             new_shape = False
                         else:
-                            gcode += "G0 X%0.1f Y%0.1f\n" % (x, y)
+                            gcode += "G1 X%0.1f Y%0.1f F%0.1f \n" % (-x, -y, feed_rate)
                         log += debug_log("\t    --Point printed")
                     else:
                         log += debug_log(
