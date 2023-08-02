@@ -31,3 +31,12 @@ python3 ./svg2gcode.py ./filename.svg
 
 ## Details
 The compiler is based on the eggbot project and it basically converts all of the SVG shapes into bezier curves. The bezier curves are then recursively sub divided until desired smoothness is achieved. The sub curves are then approximated as lines which are then converted into g-code.
+
+### Usage Notes
+
+```
+This works fairly well with vpype. vpype likes to use a viewBox instead of using width and height. So care has to be taken to make sure svg2gcode.py is using the right dimensions.
+
+vpype read infile.svg linesort write outfile.svg 
+
+```
