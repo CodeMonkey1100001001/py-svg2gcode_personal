@@ -4,7 +4,8 @@
 # Gcode outputs
 tests/gcode_output
 gcode_output/*
-
+log/*
+*~
 # Log Files
 tests/log
 /venv/
